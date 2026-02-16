@@ -1,0 +1,228 @@
+@model Formacion
+@{
+    ViewData["Title"] = "Editar Formación";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <a asp-action="Index" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información de la formación -->
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header" style="background: linear-gradient(135deg, #002B4C 0%, #1A5490 100%); color: white;">
+                    <h5 class="mb-0"><i class="fas fa-edit"></i> Información</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="EditarFormacion" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="FechaCreacion" />
+
+                        <div class="mb-3">
+                            <label asp-for="Titulo" class="form-label">Título</label>
+                            <input asp-for="Titulo" class="form-control" />
+                            <span asp-validation-for="Titulo" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descripcion" class="form-label">Descripción</label>
+                            <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Categoria" class="form-label">Categoría</label>
+                            <input asp-for="Categoria" class="form-control" />
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input asp-for="Activo" type="checkbox" class="form-check-input" />
+                            <label asp-for="Activo" class="form-check-label">
+                                Formación activa
+                            </label>
+                        </div>
+
+                        <button type="submit" class="btn w-100" style="background-color: #002B4C; color: white;">
+                            <i class="fas fa-save"></i> Guardar Cambios
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Videos y Archivos -->
+        <div class="col-md-8">
+            <!-- VIDEOS -->
+            <div class="card mb-3">
+                <div class="card-header" style="background-color: #0A7BB8; color: white;">
+                    <h5 class="mb-0">
+                        <i class="fas fa-video"></i> Videos (@Model.Videos.Count)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Formulario para subir video -->
+                    <form asp-action="SubirVideo" method="post" enctype="multipart/form-data" class="mb-4 p-3 border rounded" style="background-color: #F5F5F5;">
+                        <input type="hidden" name="formacionId" value="@Model.Id" />
+                        
+                        <h6 class="mb-3"><i class="fas fa-upload"></i> Subir nuevo video</h6>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Título del video</label>
+                            <input type="text" name="titulo" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripción (opcional)</label>
+                            <input type="text" name="descripcion" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Archivo de video</label>
+                            <input type="file" name="videoFile" class="form-control" 
+                                   accept=".mp4,.avi,.mov,.wmv,.mkv" required />
+                            <small class="text-muted">
+                                Formatos permitidos: MP4, AVI, MOV, WMV, MKV (máx. 500MB)
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn" style="background-color: #0A7BB8; color: white;">
+                            <i class="fas fa-cloud-upload"></i> Subir Video
+                        </button>
+                    </form>
+
+                    <!-- Lista de videos -->
+                    @if (Model.Videos.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var video in Model.Videos)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-play-circle text-success"></i> @video.Titulo
+                                            </h6>
+                                            @if (!string.IsNullOrEmpty(video.Descripcion))
+                                            {
+                                                <p class="mb-1 text-muted small">@video.Descripcion</p>
+                                            }
+                                            <small class="text-muted">
+                                                <i class="fas fa-file"></i> @video.NombreArchivo
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-hdd"></i> @(video.TamanoBytes / 1024 / 1024) MB
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-calendar"></i> @video.FechaSubida.ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        </div>
+                                        <form asp-action="EliminarVideo" method="post" 
+                                              onsubmit="return confirm('¿Eliminar este video?');">
+                                            <input type="hidden" name="id" value="@video.Id" />
+                                            <button type="submit" class="btn btn-sm" style="background-color: #E74C3C; color: white;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No hay videos subidos todavía.
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ARCHIVOS ADJUNTOS -->
+            <div class="card">
+                <div class="card-header" style="background-color: #1A5490; color: white;">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-alt"></i> Archivos Adjuntos (@Model.Archivos.Count)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Formulario para subir archivo -->
+                    <form asp-action="SubirArchivo" method="post" enctype="multipart/form-data" class="mb-4 p-3 border rounded" style="background-color: #F5F5F5;">
+                        <input type="hidden" name="formacionId" value="@Model.Id" />
+                        
+                        <h6 class="mb-3"><i class="fas fa-upload"></i> Subir nuevo archivo</h6>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Título del archivo</label>
+                            <input type="text" name="titulo" class="form-control" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripción (opcional)</label>
+                            <input type="text" name="descripcion" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Archivo</label>
+                            <input type="file" name="archivoFile" class="form-control" 
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip" required />
+                            <small class="text-muted">
+                                Formatos: PDF, Word, Excel, PowerPoint, TXT, ZIP (máx. 500MB)
+                            </small>
+                        </div>
+
+                        <button type="submit" class="btn" style="background-color: #1A5490; color: white;">
+                            <i class="fas fa-cloud-upload"></i> Subir Archivo
+                        </button>
+                    </form>
+
+                    <!-- Lista de archivos -->
+                    @if (Model.Archivos.Any())
+                    {
+                        <div class="list-group">
+                            @foreach (var archivo in Model.Archivos)
+                            {
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-file-pdf text-danger"></i> @archivo.Titulo
+                                            </h6>
+                                            @if (!string.IsNullOrEmpty(archivo.Descripcion))
+                                            {
+                                                <p class="mb-1 text-muted small">@archivo.Descripcion</p>
+                                            }
+                                            <small class="text-muted">
+                                                <i class="fas fa-file"></i> @archivo.NombreArchivo
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-hdd"></i> @(archivo.TamanoBytes / 1024 / 1024) MB
+                                                <span class="mx-2">|</span>
+                                                <i class="fas fa-calendar"></i> @archivo.FechaSubida.ToString("dd/MM/yyyy HH:mm")
+                                            </small>
+                                        </div>
+                                        <form asp-action="EliminarArchivo" method="post" 
+                                              onsubmit="return confirm('¿Eliminar este archivo?');">
+                                            <input type="hidden" name="id" value="@archivo.Id" />
+                                            <button type="submit" class="btn btn-sm" style="background-color: #E74C3C; color: white;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i> No hay archivos adjuntos todavía.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

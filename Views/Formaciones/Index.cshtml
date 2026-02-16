@@ -1,0 +1,65 @@
+@model IEnumerable<Formacion>
+@{
+    ViewData["Title"] = "Mis Formaciones";
+}
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2><i class="fas fa-graduation-cap"></i> Formaciones Disponibles</h2>
+            <p class="text-muted">Accede a todo el contenido de formación</p>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var formacion in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header" style="background: linear-gradient(135deg, #002B4C 0%, #1A5490 100%); color: white;">
+                            <h5 class="card-title mb-0">@formacion.Titulo</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@formacion.Descripcion</p>
+                            
+                            @if (!string.IsNullOrEmpty(formacion.Categoria))
+                            {
+                                <p class="mb-2">
+                                    <span class="badge" style="background-color: #0A7BB8;">@formacion.Categoria</span>
+                                </p>
+                            }
+
+                            <div class="d-flex justify-content-between mb-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-video"></i> @formacion.Videos.Count video(s)
+                                </small>
+                                <small class="text-muted">
+                                    <i class="fas fa-file"></i> @formacion.Archivos.Count archivo(s)
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a asp-action="Detalle" asp-route-id="@formacion.Id" 
+                               class="btn w-100" style="background-color: #002B4C; color: white;">
+                                <i class="fas fa-play-circle"></i> Ver Formación
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> 
+                    No hay formaciones disponibles en este momento.
+                </div>
+            </div>
+        </div>
+    }
+</div>
