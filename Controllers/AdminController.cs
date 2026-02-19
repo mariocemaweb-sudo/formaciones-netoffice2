@@ -131,7 +131,7 @@ namespace FormacionesApp.Controllers
                 return RedirectToAction("EditarFormacion", new { id = formacionId });
             }
 
-            var allowedExtensions = _configuration.GetSection("AllowedVideoExtensions").Get<string[]>();
+            var allowedExtensions = _configuration.GetSection("AllowedVideoExtensions").Get<string[]>() ?? new[] { ".mp4", ".avi", ".mov", ".wmv", ".mkv" };
             var extension = Path.GetExtension(videoFile.FileName).ToLower();
 
             if (!allowedExtensions.Contains(extension))
@@ -213,7 +213,7 @@ namespace FormacionesApp.Controllers
                 return RedirectToAction("EditarFormacion", new { id = formacionId });
             }
 
-            var allowedExtensions = _configuration.GetSection("AllowedFileExtensions").Get<string[]>();
+            var allowedExtensions = _configuration.GetSection("AllowedFileExtensions").Get<string[]>() ?? new[] { ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".zip" };
             var extension = Path.GetExtension(archivoFile.FileName).ToLower();
 
             if (!allowedExtensions.Contains(extension))

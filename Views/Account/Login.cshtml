@@ -13,87 +13,375 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #002B4C 0%, #1A5490 100%);
             min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: white;
+        }
+
+        .login-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #002B4C 0%, #1A5490 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(20px); }
+        }
+
+        .login-left-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: white;
+        }
+
+        .login-left-logo {
+            width: 100%;
+            height: 100%;
+            margin-bottom: 0;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-            max-width: 400px;
-            width: 100%;
+
+        .login-left-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
         }
-        .login-header {
-            background: linear-gradient(135deg, #002B4C 0%, #1A5490 100%);
-            color: white;
-            padding: 30px;
+
+        .login-right {
+            flex: 1;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 80px;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 12px;
+            padding: 50px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .login-header-right {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .login-header-right img {
+            height: 45px;
+            object-fit: contain;
+        }
+
+        .login-header-right .logo-badge {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .login-section-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: #002B4C;
+            margin-bottom: 10px;
             text-align: center;
         }
-        .login-header img {
-            max-width: 200px;
-            height: auto;
+
+        .login-section-subtitle {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 0;
+            text-align: center;
+        }
+
+        .form-group-custom {
+            margin-bottom: 20px;
+        }
+
+        .form-label-custom {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f8f8;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            background: white;
+            border-color: #1A5490;
+            box-shadow: 0 0 0 3px rgba(26, 84, 144, 0.1);
+        }
+
+        .password-toggle-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: #999;
+            cursor: pointer;
+            font-size: 16px;
+            z-index: 10;
+            transition: color 0.3s ease;
+        }
+
+        .password-toggle:hover {
+            color: #1A5490;
+        }
+
+        .form-check-custom {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            margin-top: 15px;
+        }
+
+        .form-check-input-custom {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #1A5490;
+            border-radius: 3px;
+        }
+
+        .form-check-label-custom {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .btn-login-custom {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #002B4C 0%, #1A5490 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
             margin-bottom: 15px;
         }
-        .login-body {
-            padding: 30px;
+
+        .btn-login-custom:hover {
+            background: linear-gradient(135deg, #001f38 0%, #153d73 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 43, 76, 0.4);
+        }
+
+        .btn-login-custom:active {
+            transform: translateY(0);
+        }
+
+        .login-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .login-links a {
+            color: #1A5490;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .login-links a:hover {
+            color: #002B4C;
+            text-decoration: underline;
+        }
+
+        .login-footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .login-footer a {
+            color: #1A5490;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .validation-errors {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .alert {
+            background-color: #f8f9fa !important;
+            border: 1px solid #dee2e6 !important;
+            color: #666 !important;
+            padding: 10px 15px !important;
+            border-radius: 6px !important;
+        }
+
+        @@media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+            }
+
+            .login-left {
+                min-height: 300px;
+                justify-content: flex-end;
+            }
+
+            .login-right {
+                padding: 40px 20px;
+            }
+
+            .login-form-container {
+                max-width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <img src="~/images/netoffice2.png" alt="NetOffice" />
-            <p class="mb-0">Plataforma de Formaciones</p>
+    <div class="login-wrapper">
+        <!-- Left Side -->
+        <div class="login-left">
+            <div class="login-left-content">
+                <div class="login-left-logo">
+                    <img src="~/images/login.png" alt="Login" />
+                </div>
+            </div>
         </div>
-        <div class="login-body">
-            <form asp-action="Login" method="post">
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
-                
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label">
-                        <i class="fas fa-envelope"></i> Email
-                    </label>
-                    <input asp-for="Email" class="form-control" placeholder="tu@email.com" autofocus />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+
+        <!-- Right Side -->
+        <div class="login-right">
+            <div class="login-form-container">
+                <!-- Header with both logos -->
+                <div class="login-header-right">
+                    <img src="~/images/netoffice.png" alt="NetOffice" />
+                    <img src="~/images/lasosl_logo.jpg" alt="Laso" />
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="Password" class="form-label">
-                        <i class="fas fa-lock"></i> Contraseña
-                    </label>
-                    <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
+                <h1 class="login-section-title">Iniciar Sesión</h1>
 
-                <div class="mb-3 form-check">
-                    <input asp-for="RecordarMe" type="checkbox" class="form-check-input" />
-                    <label asp-for="RecordarMe" class="form-check-label">
-                        Recordarme
-                    </label>
-                </div>
+                <!-- Form -->
+                <form asp-action="Login" method="post">
+                    
+                    <div class="form-group-custom">
+                        <label asp-for="Email" class="form-label-custom">Email o Usuario</label>
+                        <input asp-for="Email" class="form-control-custom" placeholder="usuario@laso.com" autofocus />
+                        <span asp-validation-for="Email" class="validation-errors"></span>
+                    </div>
 
-                <button type="submit" class="btn btn-login w-100">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                </button>
-            </form>
+                    <div class="form-group-custom">
+                        <label asp-for="Password" class="form-label-custom">Contraseña</label>
+                        <div class="password-toggle-wrapper">
+                            <input asp-for="Password" type="password" class="form-control-custom" placeholder="••••••••" id="passwordInput" />
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility()">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="validation-errors"></span>
+                    </div>
 
-            <hr class="my-4">
-            
-            <div class="text-center text-muted">
-                <small>
-                    <i class="fas fa-info-circle"></i> 
-                    Usuario admin por defecto:<br>
-                    <strong>admin@formaciones.com</strong> / <strong>Admin123!</strong>
-                </small>
+                    <div class="form-check-custom">
+                        <input asp-for="RecordarMe" type="checkbox" class="form-check-input-custom" id="recordarmeInput" />
+                        <label for="recordarmeInput" class="form-check-label-custom">Recuérdame</label>
+                    </div>
+
+                    <button type="submit" class="btn-login-custom">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+
+                    <div class="login-links">
+                        <a href="#">¿Olvidaste tu contraseña?</a>
+                        <a href="#">¿Necesitas ayuda?</a>
+                    </div>
+
+                    <div class="login-footer">
+                        <p>© 2024 Laso Logistics v2.1.0</p>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleBtn = document.querySelector('.password-toggle');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+            } else {
+                passwordInput.type = 'password';
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+            }
+        }
+    </script>
 </body>
 </html>

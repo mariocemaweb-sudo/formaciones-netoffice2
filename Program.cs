@@ -9,15 +9,23 @@ builder.Services.AddControllersWithViews();
 
 // Configurar base de datos - Soporta SQLite (desarrollo) y PostgreSQL (Render production)
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-if (builder.Environment.IsProduction())
+// Determinar si usar PostgreSQL o SQLite
+bool usePostgres = !string.IsNullOrEmpty(databaseUrl) || (builder.Environment.IsProduction() && !string.IsNullOrEmpty(connectionString) && connectionString.Contains("postgres"));
+
+if (usePostgres && !string.IsNullOrEmpty(databaseUrl))
 {
-    // Usar PostgreSQL en producción (Render.com)
-    if (string.IsNullOrEmpty(connectionString))
-    {
-        throw new InvalidOperationException("Connection string 'DefaultConnection' no encontrada en producción.");
-    }
-    
+    // Usar PostgreSQL en producción (Render.com) - DATABASE_URL de Render
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseNpgsql(databaseUrl, npgsqlOptions =>
+        {
+            npgsqlOptions.EnableRetryOnFailure(maxRetryCount: 5);
+        }));
+}
+else if (usePostgres && !string.IsNullOrEmpty(connectionString))
+{
+    // Usar PostgreSQL con string de conexión configurado
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseNpgsql(connectionString, npgsqlOptions =>
         {
@@ -26,8 +34,10 @@ if (builder.Environment.IsProduction())
 }
 else
 {
-    // Usar SQLite en desarrollo local
-    var sqliteConnection = "Data Source=formaciones.db";
+    // Usar SQLite en desarrollo local (por defecto)
+    var sqliteConnection = string.IsNullOrEmpty(connectionString) || connectionString.Contains("SQLite") || connectionString.Contains("sqlite") 
+        ? connectionString 
+        : "Data Source=formaciones.db";
     
     builder.Services.AddDbContext<ApplicationDbContext>(options =>
         options.UseSqlite(sqliteConnection));
