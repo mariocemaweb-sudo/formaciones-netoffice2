@@ -4,6 +4,13 @@ using FormacionesApp.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar Kestrel para aceptar archivos grandes
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 524288000; // 500 MB
+    options.Limits.MaxRequestLineSize = 16384;
+});
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
